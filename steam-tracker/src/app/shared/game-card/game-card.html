@@ -1,0 +1,25 @@
+<div class="game-card">
+  <div class="game-image">
+    <img [src]="game().headerImage" [alt]="game().name" />
+
+    <span class="playtime">
+      <i class="bi bi-clock"></i>
+      {{ game().playtimeMinutes / 60 | number: '1.0-0' }} hours
+    </span>
+  </div>
+
+  <div class="game-content">
+    <h3>{{ game().name }}</h3>
+
+    <div class="achievement">
+      <div class="achievement-header">
+        <span>Achievements</span>
+        <span>{{ game().achievementPercentage }}%</span>
+      </div>
+
+      <div class="progress">
+        <div class="progress-bar" [style.width.%]="game().achievementPercentage"></div>
+      </div>
+    </div>
+  </div>
+</div>

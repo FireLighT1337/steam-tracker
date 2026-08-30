@@ -1,0 +1,153 @@
+<div class="dashboard">
+  <div class="container py-4">
+    <!-- Welcome -->
+    <section class="welcome-section mb-4">
+      <div class="welcome-content">
+        <p class="eyebrow">YOUR PROFILE OVERVIEW</p>
+
+        <h1>Hey there, {{ profile().username }}</h1>
+
+        <p class="subtitle">Here's an overview of your Steam Account.</p>
+      </div>
+
+      <div class="profile-badge">
+        <img [src]="profile().avatar" [alt]="profile().username" />
+
+        <div>
+          <span>Steam Level</span>
+          <strong>{{ profile().steamLevel }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="mb-5">
+      <div class="row g-3">
+        @for (stat of stats(); track stat.title) {
+          <div class="col-6 col-lg-3">
+            <app-stat-card [icon]="stat.icon" [title]="stat.title" [value]="stat.value">
+            </app-stat-card>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Recently Played -->
+    <section>
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">ACTIVITY</p>
+          <h2>Recently Played</h2>
+        </div>
+
+        <a class="section-link">
+          View library
+          <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="row g-4">
+        @for (game of recentlyPlayedGames(); track game.appId) {
+          <div class="col-12 col-md-6 col-xl-4">
+            <app-game-card [game]="game"> </app-game-card>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Gaming Overview -->
+    <section class="gaming-overview">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">YOUR LIBRARY</p>
+          <h2>Game Overview</h2>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <!-- Backlog -->
+        <div class="col-12 col-lg-6">
+          <div class="overview-card">
+            <div class="overview-card-header">
+              <div>
+                <h3>Backlog</h3>
+                <p>Games waiting to be played</p>
+              </div>
+
+              <span class="overview-count">
+                {{ backlogGames() }}
+              </span>
+            </div>
+
+            <div class="overview-list">
+              @for (game of backlogPreview(); track game.appId) {
+                <div class="overview-game">
+                  <img [src]="game.headerImage" [alt]="game.name" />
+
+                  <div class="overview-game-info">
+                    <strong>{{ game.name }}</strong>
+
+                    <span> {{ game.playtimeMinutes / 60 | number: '1.0-0' }} hours played </span>
+                  </div>
+
+                  <i class="bi bi-chevron-right"></i>
+                </div>
+              } @empty {
+                <div class="empty-state">
+                  <i class="bi bi-check-circle"></i>
+
+                  <p>Your backlog is empty.</p>
+                </div>
+              }
+            </div>
+
+            @if (backlogGames() > 3) {
+              <button class="overview-link">
+                View all {{ backlogGames() }} games
+                <i class="bi bi-arrow-right"></i>
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Completed -->
+        <div class="col-12 col-lg-6">
+          <div class="overview-card">
+            <div class="overview-card-header">
+              <div>
+                <h3>Completed Games</h3>
+                <p>Games you've marked as complete</p>
+              </div>
+
+              <span class="overview-count">
+                {{ completedGames() }}
+              </span>
+            </div>
+
+            <div class="overview-list">
+              @for (game of recentlyCompletedGames(); track game.appId) {
+                <div class="overview-game">
+                  <img [src]="game.headerImage" [alt]="game.name" />
+
+                  <div class="overview-game-info">
+                    <strong>{{ game.name }}</strong>
+
+                    <span> {{ game.achievementPercentage }}% achievements </span>
+                  </div>
+
+                  <i class="bi bi-check-circle completed-icon"></i>
+                </div>
+              } @empty {
+                <div class="empty-state">
+                  <i class="bi bi-controller"></i>
+
+                  <p>You haven't completed any games yet.</p>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

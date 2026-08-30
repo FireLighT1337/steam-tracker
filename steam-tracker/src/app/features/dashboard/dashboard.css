@@ -1,0 +1,277 @@
+.dashboard {
+  min-height: calc(100vh - 73px);
+}
+
+.welcome-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+
+  padding: 2rem 0 1rem;
+}
+
+.eyebrow {
+  margin-bottom: 0.5rem;
+
+  color: var(--accent);
+
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+h1 {
+  margin: 0;
+
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.subtitle {
+  margin-top: 0.75rem;
+  margin-bottom: 0;
+
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.profile-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  padding: 0.6rem 1rem;
+
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.profile-badge img {
+  width: 42px;
+  height: 42px;
+
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-badge div {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-badge span {
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+}
+
+.profile-badge strong {
+  font-size: 0.95rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+  margin: 0;
+
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.section-link {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+
+  transition: color 0.2s ease;
+}
+
+.section-link:hover {
+  color: var(--accent);
+}
+
+.section-link i {
+  margin-left: 4px;
+}
+
+.gaming-overview {
+  margin-top: 3.5rem;
+  padding-bottom: 3rem;
+}
+
+.overview-card {
+  height: 100%;
+  padding: 1.25rem;
+
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.overview-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.overview-card-header h3 {
+  margin: 0;
+
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.overview-card-header p {
+  margin: 0.25rem 0 0;
+
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.overview-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 36px;
+  height: 36px;
+
+  padding: 0 0.5rem;
+
+  background-color: rgba(56, 189, 248, 0.1);
+  border-radius: 10px;
+
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.overview-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.overview-game {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  padding: 0.9rem 0;
+
+  border-bottom: 1px solid var(--border);
+}
+
+.overview-game:last-child {
+  border-bottom: none;
+}
+
+.overview-game img {
+  width: 72px;
+  height: 40px;
+
+  border-radius: 6px;
+
+  object-fit: cover;
+}
+
+.overview-game-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  min-width: 0;
+}
+
+.overview-game-info strong {
+  overflow: hidden;
+
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.overview-game-info span {
+  margin-top: 0.2rem;
+
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+}
+
+.overview-game > i {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.completed-icon {
+  color: #4ade80 !important;
+}
+
+.overview-link {
+  width: 100%;
+
+  margin-top: 0.75rem;
+  padding: 0.6rem;
+
+  background: none;
+  border: none;
+
+  color: var(--accent);
+  font-size: 0.8rem;
+
+  text-align: left;
+}
+
+.overview-link:hover {
+  color: var(--accent-hover);
+}
+
+.overview-link i {
+  margin-left: 4px;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  min-height: 150px;
+
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.empty-state i {
+  margin-bottom: 0.75rem;
+
+  font-size: 1.5rem;
+}
+
+.empty-state p {
+  margin: 0;
+
+  font-size: 0.8rem;
+}
+
+@media (max-width: 576px) {
+  .welcome-section {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .profile-badge {
+    width: 100%;
+  }
+}

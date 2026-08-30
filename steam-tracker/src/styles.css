@@ -1,0 +1,52 @@
+/* You can add global styles to this file, and also import other style files */
+/* body {
+  background: #171d25;
+  color: #fff;
+}
+
+.steam-card {
+  background: #1f2937;
+  border: 1px solid #2d3748;
+  border-radius: 16px;
+}
+
+.card {
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.progress {
+  background: #374151;
+} */
+
+:root {
+  --background: #0b1120;
+  --surface: #111827;
+  --surface-hover: #172033;
+  --border: #1f2937;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+
+  --accent: #38bdf8;
+  --accent-hover: #7dd3fc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
