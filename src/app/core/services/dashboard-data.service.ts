@@ -12,6 +12,8 @@ export class DashboardDataService {
       username: 'FireLighT',
       avatar: 'https://placehold.co/96x96',
       steamLevel: 50,
+      profileUrl: 'https://steamcommunity.com/',
+      country: 'DE',
     },
 
     games: [

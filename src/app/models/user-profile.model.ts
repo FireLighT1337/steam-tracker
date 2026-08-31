@@ -3,4 +3,6 @@ export interface UserProfile {
   username: string;
   avatar: string;
   steamLevel: number;
+  profileUrl: string;
+  country: string | null;
 }
