@@ -23,11 +23,11 @@ export class SteamService {
     return this.http.get<SteamGame[]>(`${this.apiUrl}/games/${steamId}`);
   }
 
-  getRecentlyPlayed(steamId: string): Observable<SteamGame[]> {
-    return this.http.get<SteamGame[]>(`${this.apiUrl}/recently-played/${steamId}`);
-  }
-
   getAchievements(steamId: string, appId: number): Observable<AchievementSummary> {
     return this.http.get<AchievementSummary>(`${this.apiUrl}/achievements/${steamId}/${appId}`);
+  }
+
+  getRecentlyPlayed(steamId: string): Observable<SteamGame[]> {
+    return this.http.get<SteamGame[]>(`${this.apiUrl}/recently-played/${steamId}`);
   }
 }

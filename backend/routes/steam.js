@@ -7,9 +7,7 @@ router.get('/profile/:steamId', async (req, res) => {
   const { steamId } = req.params;
 
   try {
-    const data = await steamService.getProfile(steamId);
-
-    const player = data.response.players[0];
+    const { player, steamLevel } = await steamService.getProfile(steamId);
 
     if (!player) {
       return res.status(404).json({
@@ -21,7 +19,7 @@ router.get('/profile/:steamId', async (req, res) => {
       steamId: player.steamid,
       username: player.personaname,
       avatar: player.avatarfull,
-      steamLevel: player.steamlevel ?? 0,
+      steamLevel,
       profileUrl: player.profileurl,
       country: player.loccountrycode ?? null,
     });
@@ -47,6 +45,7 @@ router.get('/games/:steamId', async (req, res) => {
     const mappedGames = games.map((game) => ({
       appId: game.appid,
       name: game.name,
+      headerImage: `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appid}/header.jpg`,
       playtimeMinutes: game.playtime_forever,
       lastPlayed: game.rtime_last_played ? new Date(game.rtime_last_played * 1000) : null,
     }));
@@ -87,45 +86,6 @@ router.get('/store/:appId', async (req, res) => {
 
     res.status(500).json({
       error: 'Failed to fetch Steam store data.',
-    });
-  }
-});
-
-router.get('/recently-played/:steamId', async (req, res) => {
-  const { steamId } = req.params;
-
-  try {
-    const games = await steamService.getOwnedGames(steamId);
-
-    const recentlyPlayed = games
-      .filter((game) => game.rtime_last_played)
-      .sort((a, b) => b.rtime_last_played - a.rtime_last_played)
-      .slice(0, 3);
-
-    const enrichedGames = await Promise.all(
-      recentlyPlayed.map(async (game) => {
-        const storeGame = await steamService.getStoreGame(game.appid);
-
-        return {
-          appId: game.appid,
-          name: game.name,
-          headerImage: storeGame?.headerImage ?? null,
-          playtimeMinutes: game.playtime_forever,
-          lastPlayed: new Date(game.rtime_last_played * 1000),
-        };
-      }),
-    );
-
-    res.json(enrichedGames);
-  } catch (error) {
-    console.error(
-      'Steam recently played error:',
-      error.response?.status,
-      error.response?.data || error.message,
-    );
-
-    res.status(500).json({
-      error: 'Failed to fetch recently played games.',
     });
   }
 });
@@ -186,6 +146,35 @@ router.get('/achievements/:steamId/:appId', async (req, res) => {
 
     res.status(500).json({
       error: 'Failed to fetch Steam achievements.',
+    });
+  }
+});
+
+router.get('/recently-played/:steamId', async (req, res) => {
+  const { steamId } = req.params;
+
+  try {
+    const games = await steamService.getRecentlyPlayedGames(steamId);
+
+    res.json(
+      games.map((game) => ({
+        appId: game.appid,
+        name: game.name,
+        headerImage: `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appid}/header.jpg`,
+        playtimeMinutes: game.playtime_forever,
+        playtimeTwoWeeks: game.playtime_2weeks,
+        lastPlayed: null,
+      })),
+    );
+  } catch (error) {
+    console.error(
+      'Steam recently played error:',
+      error.response?.status,
+      error.response?.data || error.message,
+    );
+
+    res.status(500).json({
+      error: 'Failed to fetch recently played games.',
     });
   }
 });

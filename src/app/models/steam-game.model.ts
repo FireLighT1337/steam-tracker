@@ -5,6 +5,7 @@ export interface SteamGame {
   name: string;
   headerImage: string;
   playtimeMinutes: number;
+  playtimeTwoWeeks?: number;
   lastPlayed: Date | null;
   achievementSummary?: AchievementSummary;
 }

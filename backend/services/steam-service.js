@@ -6,14 +6,28 @@ const STEAM_API_URL = 'https://api.steampowered.com';
 const STEAM_STORE_API_URL = 'https://store.steampowered.com/api';
 
 async function getProfile(steamId) {
-  const response = await axios.get(`${STEAM_API_URL}/ISteamUser/GetPlayerSummaries/v0002/`, {
-    params: {
-      key: process.env.STEAM_API_KEY,
-      steamids: steamId,
-    },
-  });
+  const [profileResponse, levelResponse] = await Promise.all([
+    axios.get(`${STEAM_API_URL}/ISteamUser/GetPlayerSummaries/v0002/`, {
+      params: {
+        key: process.env.STEAM_API_KEY,
+        steamids: steamId,
+      },
+    }),
 
-  return response.data;
+    axios.get(`${STEAM_API_URL}/IPlayerService/GetSteamLevel/v1/`, {
+      params: {
+        key: process.env.STEAM_API_KEY,
+        steamid: steamId,
+      },
+    }),
+  ]);
+
+  const player = profileResponse.data.response.players[0];
+
+  return {
+    player,
+    steamLevel: levelResponse.data.response?.player_level ?? 0,
+  };
 }
 
 async function getOwnedGames(steamId) {
@@ -146,6 +160,21 @@ async function getAchievements(steamId, appId) {
   };
 }
 
+async function getRecentlyPlayedGames(steamId) {
+  const response = await axios.get(
+    `${STEAM_API_URL}/IPlayerService/GetRecentlyPlayedGames/v0001/`,
+    {
+      params: {
+        key: process.env.STEAM_API_KEY,
+        steamid: steamId,
+        count: 3,
+      },
+    },
+  );
+
+  return response.data.response.games ?? [];
+}
+
 export {
   getProfile,
   getOwnedGames,
@@ -154,4 +183,5 @@ export {
   getGameSchema,
   getAchievements,
   getGlobalAchievementPercentages,
+  getRecentlyPlayedGames,
 };

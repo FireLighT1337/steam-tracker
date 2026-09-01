@@ -132,7 +132,7 @@
                   <div class="overview-game-info">
                     <strong>{{ game.name }}</strong>
 
-                    <span> {{ game.achievementPercentage }}% achievements </span>
+                    <span> {{ game.achievementSummary?.progressPercent ?? 0 }}% achievements </span>
                   </div>
 
                   <i class="bi bi-check-circle completed-icon"></i>
