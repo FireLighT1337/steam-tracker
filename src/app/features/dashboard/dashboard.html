@@ -5,17 +5,17 @@
       <div class="welcome-content">
         <p class="eyebrow">YOUR PROFILE OVERVIEW</p>
 
-        <h1>Hey there, {{ profile().username }}</h1>
+        <h1>Hey there, {{ profile()?.username }}</h1>
 
         <p class="subtitle">Here's an overview of your Steam Account.</p>
       </div>
 
       <div class="profile-badge">
-        <img [src]="profile().avatar" [alt]="profile().username" />
+        <img [src]="profile()?.avatar" [alt]="profile()?.username" />
 
         <div>
           <span>Steam Level</span>
-          <strong>{{ profile().steamLevel }}</strong>
+          <strong>{{ profile()?.steamLevel }}</strong>
         </div>
       </div>
     </section>
