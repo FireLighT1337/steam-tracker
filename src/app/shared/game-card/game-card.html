@@ -29,19 +29,22 @@
       </div>
     </div>
     @if (game().achievementSummary?.rarestAchievements?.length) {
-      <div class="rarest-achievements">
-        @for (
-          achievement of game().achievementSummary!.rarestAchievements;
-          track achievement.apiName
-        ) {
-          <div class="rare-achievement">
-            <div class="rare-achievement-icon">
-              <img [src]="achievement.icon" [alt]="achievement.displayName" />
-            </div>
+      <div class="rarest-achievements-section">
+        <h4>Rarest Achievements</h4>
+        <div class="rarest-achievements">
+          @for (
+            achievement of game().achievementSummary!.rarestAchievements;
+            track achievement.apiName
+          ) {
+            <div class="rare-achievement">
+              <div class="rare-achievement-icon">
+                <img [src]="achievement.icon" [alt]="achievement.displayName" />
+              </div>
 
-            <span>{{ achievement.displayName }}</span>
-          </div>
-        }
+              <span>{{ achievement.displayName }}</span>
+            </div>
+          }
+        </div>
       </div>
     } @else {
       <div class="no-achievements">

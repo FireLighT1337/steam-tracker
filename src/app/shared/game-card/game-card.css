@@ -144,17 +144,33 @@
 }
 
 .no-achievements {
+  margin-top: 1.5rem;
+
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border);
-  color: var(--text-secondary);
-  font-size: 0.75rem;
+
+  text-align: center;
+  color: #8f98a0;
+
+  min-height: 100px;
 }
 
 .no-achievements i {
-  font-size: 0.9rem;
+  font-size: 1.8rem;
+}
+
+.rarest-achievements-section {
+  margin-top: 1rem;
+}
+
+.rarest-achievements-section h4 {
+  margin: 0 0 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8f98a0;
 }
