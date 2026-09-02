@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 import { UserProfile } from '../../models/user-profile.model';
 import { AchievementSummary } from '../../models/achievement-summary.model';
@@ -21,6 +21,10 @@ export class SteamService {
 
   getGames(steamId: string): Observable<SteamGame[]> {
     return this.http.get<SteamGame[]>(`${this.apiUrl}/games/${steamId}`);
+  }
+
+  getGame(steamId: string, appId: number): Observable<SteamGame | undefined> {
+    return this.getGames(steamId).pipe(map((games) => games.find((game) => game.appId === appId)));
   }
 
   getAchievements(steamId: string, appId: number): Observable<AchievementSummary> {

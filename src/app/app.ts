@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Navbar } from './shared/navbar/navbar';
+import { SteamStateService } from './core/services/steam-state.service';
 
 @Component({
   selector: 'app-root',
@@ -9,5 +10,11 @@ import { Navbar } from './shared/navbar/navbar';
   styleUrl: './app.css',
 })
 export class App {
+  private readonly steamState = inject(SteamStateService);
+
   protected readonly title = signal('steam-tracker');
+
+  constructor() {
+    this.steamState.loadInitialData();
+  }
 }

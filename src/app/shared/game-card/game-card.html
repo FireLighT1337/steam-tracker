@@ -1,6 +1,6 @@
-<div class="game-card">
+<a class="game-card" [routerLink]="['/game', game().appId]">
   <div class="game-image">
-    <img [src]="game().headerImage" [alt]="game().name" />
+    <img [src]="game().headerImage" [alt]="game().name" (error)="onImageError($event)" />
 
     <span class="playtime">
       <i class="bi bi-clock"></i>
@@ -53,4 +53,4 @@
       </div>
     }
   </div>
-</div>
+</a>

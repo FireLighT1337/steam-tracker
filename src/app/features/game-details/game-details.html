@@ -1,0 +1,136 @@
+@if (loading()) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading game details...</p>
+  </div>
+} @else if (game(); as selectedGame) {
+  <div class="game-details-page">
+    <div class="hero">
+      <img
+        class="hero-image"
+        [src]="
+          'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/' +
+          selectedGame.appId +
+          '/library_hero.jpg'
+        "
+        [alt]="selectedGame.name"
+        (error)="onHeroImageError($event, selectedGame.appId)"
+      />
+      <div class="hero-overlay">
+        <h1>{{ selectedGame.name }}</h1>
+      </div>
+    </div>
+
+    <div class="stat-cards">
+      <div class="stat-card">
+        <i class="bi bi-clock"></i>
+        <strong>{{ selectedGame.playtimeMinutes / 60 | number: '1.0-0' }}h</strong>
+        <span>Total Playtime</span>
+      </div>
+
+      <div class="stat-card">
+        <i class="bi bi-graph-up"></i>
+        <strong>
+          @if ((selectedGame.playtimeTwoWeeks ?? 0) > 0) {
+            {{ (selectedGame.playtimeTwoWeeks ?? 0) / 60 | number: '1.0-1' }}h
+          } @else {
+            —
+          }
+        </strong>
+        <span>Last 2 Weeks</span>
+      </div>
+
+      <div class="stat-card">
+        <i class="bi bi-trophy"></i>
+        <strong>{{ selectedGame.achievementSummary?.progressPercent ?? 0 }}%</strong>
+        <span>Achievement Progress</span>
+      </div>
+    </div>
+
+    <div class="achievements-section">
+      <div class="achievements-header">
+        <h2>Achievements</h2>
+        <span>{{ unlockedCount() }} / {{ totalCount() }} unlocked</span>
+      </div>
+
+      <div class="progress">
+        <div
+          class="progress-bar"
+          [style.width.%]="selectedGame.achievementSummary?.progressPercent ?? 0"
+        ></div>
+      </div>
+    </div>
+
+    @if (selectedGame.achievementSummary?.rarestAchievements?.length) {
+      <div class="section">
+        <h2>Rarest Achievements</h2>
+        <div class="achievement-list">
+          @for (
+            achievement of selectedGame.achievementSummary!.rarestAchievements;
+            track achievement.apiName
+          ) {
+            <div class="achievement-row">
+              <img [src]="achievement.icon" [alt]="achievement.displayName" />
+              <div class="achievement-info">
+                <strong>{{ achievement.displayName }}</strong>
+                <span>{{ achievement.globalPercent }}% of players • Unlocked</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    @if (selectedGame.achievementSummary?.achievements?.length) {
+      <div class="section">
+        <h2>All Achievements</h2>
+        <div class="achievement-list">
+          @for (achievement of visibleAchievements(); track achievement.apiName) {
+            <div class="achievement-row">
+              <img
+                [src]="achievement.achieved ? achievement.icon : achievement.iconGray"
+                [alt]="achievement.displayName"
+              />
+              <div class="achievement-info">
+                <strong>{{ achievement.displayName }}</strong>
+                <span>{{ achievement.achieved ? 'Unlocked' : 'Locked' }}</span>
+              </div>
+              <i
+                class="bi"
+                [class.bi-check-circle-fill]="achievement.achieved"
+                [class.bi-lock-fill]="!achievement.achieved"
+                [class.achieved]="achievement.achieved"
+              ></i>
+            </div>
+          }
+        </div>
+
+        @if (hasMoreAchievements()) {
+          <button class="show-more-btn" (click)="showMoreAchievements()">
+            Show More
+            <i class="bi bi-chevron-down"></i>
+          </button>
+        }
+      </div>
+    }
+
+    <div class="actions">
+      <button class="action-btn" [class.active]="selectedGame.isBacklog" (click)="toggleBacklog()">
+        {{ selectedGame.isBacklog ? 'Remove from Backlog' : 'Add to Backlog' }}
+      </button>
+
+      <button
+        class="action-btn primary"
+        [class.active]="selectedGame.isCompleted"
+        (click)="toggleCompleted()"
+      >
+        {{ selectedGame.isCompleted ? 'Completed ✓' : 'Mark Completed' }}
+      </button>
+    </div>
+  </div>
+} @else {
+  <div class="error-state">
+    <p>Couldn't load this game's details.</p>
+    <a routerLink="/">Back to dashboard</a>
+  </div>
+}

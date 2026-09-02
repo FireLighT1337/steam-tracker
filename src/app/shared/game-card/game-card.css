@@ -1,28 +1,42 @@
 .game-card {
-  overflow: hidden;
-
+  display: flex;
+  flex-direction: column;
   height: 100%;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
 
   background-color: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 10px;
+  overflow: hidden;
 
   transition:
-    transform 0.2s ease,
-    border-color 0.2s ease;
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
 }
 
 .game-card:hover {
-  transform: translateY(-4px);
-  border-color: #334155;
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+.game-card:active {
+  transform: translateY(-2px) scale(0.99);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.game-card:focus-visible {
+  outline: 2px solid #66c0f4;
+  outline-offset: 3px;
 }
 
 .game-image {
   position: relative;
-
-  aspect-ratio: 16 / 9;
-
   overflow: hidden;
+  flex-shrink: 0;
+  aspect-ratio: 616 / 353;
 }
 
 .game-image img {
@@ -33,11 +47,15 @@
 
   display: block;
 
-  transition: transform 0.3s ease;
+  transition: transform 250ms ease;
 }
 
 .game-card:hover .game-image img {
-  transform: scale(1.04);
+  transform: scale(1.03);
+}
+
+.game-card:active .game-image img {
+  transform: scale(1.01);
 }
 
 .playtime {
@@ -59,6 +77,9 @@
 }
 
 .game-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   padding: 1rem;
 }
 
@@ -148,14 +169,13 @@
 
   display: flex;
   flex-direction: column;
-  align-items: center;
+  flex: 1;
   justify-content: center;
+  align-items: center;
   gap: 0.5rem;
 
   text-align: center;
   color: #8f98a0;
-
-  min-height: 100px;
 }
 
 .no-achievements i {

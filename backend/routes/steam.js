@@ -45,7 +45,7 @@ router.get('/games/:steamId', async (req, res) => {
     const mappedGames = games.map((game) => ({
       appId: game.appid,
       name: game.name,
-      headerImage: `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appid}/header.jpg`,
+      headerImage: `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appid}/capsule_616x353.jpg`,
       playtimeMinutes: game.playtime_forever,
       lastPlayed: game.rtime_last_played ? new Date(game.rtime_last_played * 1000) : null,
     }));
@@ -160,7 +160,7 @@ router.get('/recently-played/:steamId', async (req, res) => {
       games.map((game) => ({
         appId: game.appid,
         name: game.name,
-        headerImage: `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appid}/header.jpg`,
+        headerImage: `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appid}/capsule_616x353.jpg`,
         playtimeMinutes: game.playtime_forever,
         playtimeTwoWeeks: game.playtime_2weeks,
         lastPlayed: null,

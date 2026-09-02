@@ -1,4 +1,5 @@
 .navbar {
+  position: relative;
   background-color: rgba(11, 17, 32, 0.9);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(10px);
@@ -40,4 +41,29 @@
 
 .nav-link.active {
   color: var(--accent);
+}
+
+.navbar-back-link {
+  position: absolute;
+  left: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.navbar-back-link:hover {
+  color: var(--accent-hover);
 }

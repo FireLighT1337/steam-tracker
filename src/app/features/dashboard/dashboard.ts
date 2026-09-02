@@ -1,9 +1,8 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { StatCard } from '../../shared/stat-card/stat-card';
 import { GameCard } from '../../shared/game-card/game-card';
 import { DecimalPipe } from '@angular/common';
-import { SteamService } from '../../core/services/steam.service';
-import { UserProfile } from '../../models/user-profile.model';
+import { SteamStateService } from '../../core/services/steam-state.service';
 import { Game } from '../../models/game.model';
 
 interface Stat {
@@ -19,98 +18,45 @@ interface Stat {
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
-  private readonly steamService = inject(SteamService);
-  private readonly steamId = '76561198127309108';
-  // private readonly steamId = '76561198201368665';
-
-  private loadProfile(): void {
-    this.steamService.getProfile(this.steamId).subscribe({
-      next: (profile) => {
-        this.profile.set(profile);
-      },
-      error: (error) => {
-        console.error('Failed to load Steam profile:', error);
-      },
-    });
-  }
-
-  private loadAchievements(): void {
-    this.recentlyPlayed().forEach((game) => {
-      this.steamService.getAchievements(this.steamId, game.appId).subscribe({
-        next: (achievementSummary) => {
-          this.recentlyPlayed.update((games) =>
-            games.map((currentGame) =>
-              currentGame.appId === game.appId
-                ? { ...currentGame, achievementSummary }
-                : currentGame,
-            ),
-          );
-        },
-        error: (error) => {
-          console.error(`Failed to load achievements for ${game.name}:`, error);
-        },
-      });
-    });
-  }
-
-  private loadGames(): void {
-    this.steamService.getGames(this.steamId).subscribe({
-      next: (games) => {
-        this.games.set(
-          games.map((game) => ({
-            ...game,
-            lastPlayed: game.lastPlayed ? new Date(game.lastPlayed) : null,
-            isCompleted: false,
-            isBacklog: false,
-          })),
-        );
-      },
-      error: (error) => {
-        console.error('Failed to load Steam games:', error);
-      },
-    });
-  }
-
-  private loadRecentlyPlayedGames(): void {
-    this.steamService.getRecentlyPlayed(this.steamId).subscribe({
-      next: (games) => {
-        this.recentlyPlayed.set(
-          games.map((game) => ({
-            ...game,
-            isCompleted: false,
-            isBacklog: false,
-            lastPlayed: null,
-          })),
-        );
-
-        this.loadAchievements();
-      },
-      error: (error) => {
-        console.error('Failed to load recently played games:', error);
-      },
-    });
-  }
+  private readonly steamState = inject(SteamStateService);
 
   constructor() {
-    this.loadProfile();
-    this.loadGames();
-    this.loadRecentlyPlayedGames();
+    this.steamState.loadInitialData();
   }
 
-  profile = signal<UserProfile | null>(null);
+  loading = this.steamState.loading;
 
-  games = signal<Game[]>([]);
+  profile = this.steamState.profile;
+  games = this.steamState.games;
+  recentlyPlayed = this.steamState.recentlyPlayed;
+  gamesOwned = this.steamState.totalGames;
+  hoursPlayed = this.steamState.totalHours;
 
-  recentlyPlayed = signal<Game[]>([]);
+  private readonly allTrackedGames = computed(() => {
+    const map = new Map<number, Game>();
 
-  gamesOwned = computed(() => this.games().length);
+    for (const game of this.games()) {
+      map.set(game.appId, game);
+    }
 
-  completedGames = computed(() => this.games().filter((game) => game.isCompleted).length);
+    for (const game of this.recentlyPlayed()) {
+      map.set(game.appId, { ...map.get(game.appId), ...game });
+    }
 
-  backlogGames = computed(() => this.games().filter((game) => game.isBacklog).length);
+    return Array.from(map.values());
+  });
+  completedGames = computed(() => this.allTrackedGames().filter((game) => game.isCompleted).length);
+  backlogGames = computed(() => this.allTrackedGames().filter((game) => game.isBacklog).length);
+  backlogPreview = computed(() =>
+    this.allTrackedGames()
+      .filter((game) => game.isBacklog)
+      .slice(0, 3),
+  );
 
-  hoursPlayed = computed(() =>
-    Math.round(this.games().reduce((total, game) => total + game.playtimeMinutes, 0) / 60),
+  recentlyCompletedGames = computed(() =>
+    this.allTrackedGames()
+      .filter((game) => game.isCompleted)
+      .slice(0, 3),
   );
 
   stats = computed<Stat[]>(() => [
@@ -132,21 +78,18 @@ export class Dashboard {
     {
       icon: 'bi-clock-history',
       title: 'Hours Played',
-      value: this.hoursPlayed(),
+      value: Math.round(this.hoursPlayed()),
     },
   ]);
 
   recentlyPlayedGames = computed(() => this.recentlyPlayed());
 
-  backlogPreview = computed(() =>
-    this.games()
-      .filter((game) => game.isBacklog)
-      .slice(0, 3),
-  );
+  onImageError(event: Event, appId: number): void {
+    const img = event.target as HTMLImageElement;
+    const fallbackUrl = `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${appId}/header.jpg`;
 
-  recentlyCompletedGames = computed(() =>
-    this.games()
-      .filter((game) => game.isCompleted)
-      .slice(0, 3),
-  );
+    if (img.src !== fallbackUrl) {
+      img.src = fallbackUrl;
+    }
+  }
 }

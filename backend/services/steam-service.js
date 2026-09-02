@@ -70,39 +70,47 @@ async function getStoreGame(appId) {
 }
 
 async function getPlayerAchievements(steamId, appId) {
-  const response = await axios.get(
-    `${STEAM_API_URL}/ISteamUserStats/GetPlayerAchievements/v0001/`,
-    {
-      params: {
-        key: process.env.STEAM_API_KEY,
-        steamid: steamId,
-        appid: appId,
-      },
-    },
-  );
-
-  return response.data;
+  try {
+    const response = await axios.get(
+      `${STEAM_API_URL}/ISteamUserStats/GetPlayerAchievements/v0001/`,
+      { params: { key: process.env.STEAM_API_KEY, steamid: steamId, appid: appId } },
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 400 || error.response?.status === 403) {
+      return { playerstats: { achievements: [] } };
+    }
+    throw error;
+  }
 }
 
 async function getGameSchema(appId) {
-  const response = await axios.get(`${STEAM_API_URL}/ISteamUserStats/GetSchemaForGame/v2/`, {
-    params: { key: process.env.STEAM_API_KEY, appid: appId, l: 'english' },
-  });
-
-  return response.data;
+  try {
+    const response = await axios.get(`${STEAM_API_URL}/ISteamUserStats/GetSchemaForGame/v2/`, {
+      params: { key: process.env.STEAM_API_KEY, appid: appId, l: 'english' },
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 400 || error.response?.status === 403) {
+      return { game: {} };
+    }
+    throw error;
+  }
 }
 
 async function getGlobalAchievementPercentages(appId) {
-  const response = await axios.get(
-    `${STEAM_API_URL}/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/`,
-    {
-      params: {
-        gameid: appId,
-      },
-    },
-  );
-
-  return response.data;
+  try {
+    const response = await axios.get(
+      `${STEAM_API_URL}/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v2/`,
+      { params: { gameid: appId } },
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 400 || error.response?.status === 403) {
+      return { achievementpercentages: { achievements: [] } };
+    }
+    throw error;
+  }
 }
 
 async function getAchievements(steamId, appId) {
@@ -157,6 +165,7 @@ async function getAchievements(steamId, appId) {
   return {
     progressPercent,
     rarestAchievements,
+    achievements,
   };
 }
 

@@ -10,6 +10,10 @@ export const routes: Routes = [
     path: 'dashboard',
     loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
   },
+  {
+    path: 'game/:appId',
+    loadComponent: () => import('./features/game-details/game-details').then((m) => m.GameDetails),
+  },
   //   {
   //     path: 'library',
   //     loadComponent: () =>
