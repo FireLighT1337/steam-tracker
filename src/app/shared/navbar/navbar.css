@@ -31,8 +31,9 @@
 
   border-radius: 10px;
 
-  background-color: var(--accent);
-  color: #0b1120;
+  background-color: rgba(56, 189, 248, 0.15);
+  border: 1px solid var(--accent);
+  color: var(--accent);
 }
 
 .nav-link {

@@ -1,11 +1,34 @@
 .app-footer {
-  padding: 1.5rem 2rem;
+  padding: 1.5rem 0;
   border-top: 1px solid var(--border);
-  text-align: center;
 }
 
-.app-footer p {
-  margin: 0;
+.footer-name {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.footer-year {
+  margin-left: 0.75rem;
   color: var(--text-secondary);
-  font-size: 0.75rem;
+}
+
+.footer-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: var(--accent);
+}
+
+.steam-attribution {
+  margin: 1rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  text-align: center;
 }

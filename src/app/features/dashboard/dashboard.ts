@@ -73,7 +73,7 @@ export class Dashboard {
 
   stats = computed<Stat[]>(() => [
     {
-      icon: 'bi-controller',
+      icon: 'bi-joystick',
       title: 'Owned Games',
       value: this.gamesOwned(),
     },
