@@ -47,8 +47,11 @@ export class Dashboard {
 
     return Array.from(map.values());
   });
+
   completedGames = computed(() => this.allTrackedGames().filter((game) => game.isCompleted).length);
+
   backlogGames = computed(() => this.allTrackedGames().filter((game) => game.isBacklog).length);
+
   backlogPreview = computed(() =>
     this.allTrackedGames()
       .filter((game) => game.isBacklog)
@@ -59,6 +62,13 @@ export class Dashboard {
     this.allTrackedGames()
       .filter((game) => game.isCompleted)
       .slice(0, 3),
+  );
+
+  topPlayedGames = computed(() =>
+    [...this.games()]
+      .sort((a, b) => b.playtimeMinutes - a.playtimeMinutes)
+      .slice(0, 5)
+      .map((game) => ({ name: game.name, hours: Math.round(game.playtimeMinutes / 60) })),
   );
 
   stats = computed<Stat[]>(() => [

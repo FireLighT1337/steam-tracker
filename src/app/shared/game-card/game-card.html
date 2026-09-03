@@ -8,6 +8,36 @@
       </div>
     }
 
+    @if (showStatusActions()) {
+      <div class="card-actions">
+        <button
+          class="action-icon-btn"
+          [class.active]="game().isBacklog"
+          (click)="toggleBacklog($event)"
+          title="Toggle Backlog"
+        >
+          <i
+            class="bi"
+            [class.bi-bookmark-fill]="game().isBacklog"
+            [class.bi-bookmark]="!game().isBacklog"
+          ></i>
+        </button>
+
+        <button
+          class="action-icon-btn"
+          [class.active]="game().isCompleted"
+          (click)="toggleCompleted($event)"
+          title="Toggle Completed"
+        >
+          <i
+            class="bi"
+            [class.bi-check-circle-fill]="game().isCompleted"
+            [class.bi-check-circle]="!game().isCompleted"
+          ></i>
+        </button>
+      </div>
+    }
+
     <span class="playtime">
       <i class="bi bi-clock"></i>
       @if (!showTotalPlaytimeOnly() && (game().playtimeTwoWeeks ?? 0) > 0) {

@@ -1,6 +1,8 @@
 .stat-card {
   display: flex;
   align-items: center;
+  position: relative;
+  z-index: 1;
 
   height: 100%;
   padding: 1.25rem;
@@ -17,6 +19,7 @@
 
 .stat-card:hover {
   transform: translateY(-2px);
+  z-index: 50;
 
   background-color: var(--surface-hover);
   border-color: #334155;
@@ -56,4 +59,79 @@
 
   font-size: 1.5rem;
   font-weight: 700;
+}
+
+.stat-card {
+  position: relative; /* anchors the tooltip */
+  /* ...rest unchanged... */
+}
+
+.stat-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+
+  padding: 1rem;
+
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease,
+    visibility 150ms ease;
+
+  pointer-events: none;
+}
+
+.stat-card:hover .stat-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.stat-tooltip h4 {
+  margin: 0 0 0.75rem;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.stat-tooltip-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+
+  font-size: 0.8rem;
+}
+
+.stat-tooltip-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-primary);
+}
+
+.stat-tooltip-hours {
+  flex-shrink: 0;
+  color: var(--accent);
+  font-weight: 600;
 }

@@ -12,4 +12,18 @@
       {{ value() }}
     </span>
   </div>
+
+  @if (tooltipItems()?.length) {
+    <div class="stat-tooltip">
+      <h4>Most Played</h4>
+      <div class="stat-tooltip-list">
+        @for (item of tooltipItems(); track item.name) {
+          <div class="stat-tooltip-row">
+            <span class="stat-tooltip-name">{{ item.name }}</span>
+            <span class="stat-tooltip-hours">{{ item.hours }}h</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
 </div>

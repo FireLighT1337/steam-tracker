@@ -24,20 +24,6 @@ export class Library {
   loading = this.steamState.loading;
   loadingAchievementIds = this.steamState.loadingAchievementIds;
 
-  private readonly allTrackedGames = computed(() => {
-    const map = new Map<number, Game>();
-
-    for (const game of this.games()) {
-      map.set(game.appId, game);
-    }
-
-    for (const game of this.steamState.recentlyPlayed()) {
-      map.set(game.appId, { ...map.get(game.appId), ...game });
-    }
-
-    return Array.from(map.values());
-  });
-
   statusFilter = toSignal(
     this.route.data.pipe(map((data) => (data['statusFilter'] as StatusFilter) ?? 'all')),
     { initialValue: 'all' as StatusFilter },
@@ -54,10 +40,28 @@ export class Library {
     }
   });
 
-  searchTerm = signal('');
-  sortOption = signal<SortOption>('name-asc');
-  currentPage = signal(1);
+  private readonly initialQueryParams = this.route.snapshot.queryParamMap;
+
+  searchTerm = signal(this.initialQueryParams.get('q') ?? '');
+  sortOption = signal<SortOption>(
+    (this.initialQueryParams.get('sort') as SortOption | null) ?? 'name-asc',
+  );
+  currentPage = signal(Number(this.initialQueryParams.get('page')) || 1);
   readonly pageSize = 21;
+
+  private readonly allTrackedGames = computed(() => {
+    const map = new Map<number, Game>();
+
+    for (const game of this.games()) {
+      map.set(game.appId, game);
+    }
+
+    for (const game of this.steamState.recentlyPlayed()) {
+      map.set(game.appId, { ...map.get(game.appId), ...game });
+    }
+
+    return Array.from(map.values());
+  });
 
   statusFilteredGames = computed(() => {
     const games = this.allTrackedGames();
@@ -107,13 +111,36 @@ export class Library {
     return this.sortedGames().slice(start, start + this.pageSize);
   });
 
+  private initialized = false;
+
   constructor() {
-    // Reset to page 1 whenever search, sort, or status filter (via route) changes
+    // Reset to page 1 whenever search, sort, or status filter changes, but not on initial load,
+    // since the initial page number may have been restored from the URL
     effect(() => {
       this.searchTerm();
       this.sortOption();
       this.statusFilter();
-      this.currentPage.set(1);
+
+      if (this.initialized) {
+        this.currentPage.set(1);
+      } else {
+        this.initialized = true;
+      }
+    });
+
+    // Keep the URL's query params in sync with current state, so browser back/forward
+    // and direct links restore the exact view the user was on
+    effect(() => {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: {
+          page: this.currentPage(),
+          sort: this.sortOption(),
+          q: this.searchTerm() || null,
+        },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
     });
 
     // Lazily load achievements only for games on the currently visible page

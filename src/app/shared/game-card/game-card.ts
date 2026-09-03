@@ -1,7 +1,8 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { Game } from '../../models/game.model';
 import { RouterLink } from '@angular/router';
+import { SteamStateService } from '../../core/services/steam-state.service';
 
 @Component({
   selector: 'app-game-card',
@@ -10,9 +11,12 @@ import { RouterLink } from '@angular/router';
   styleUrl: './game-card.css',
 })
 export class GameCard {
+  private readonly steamState = inject(SteamStateService);
+
   game = input.required<Game>();
   achievementsLoading = input<boolean>(false);
   showTotalPlaytimeOnly = input<boolean>(false);
+  showStatusActions = input<boolean>(false);
 
   private readonly imageSources = computed(() => {
     const appId = this.game().appId;
@@ -36,5 +40,17 @@ export class GameCard {
     } else {
       this.imageFailed.set(true);
     }
+  }
+
+  toggleBacklog(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.steamState.toggleBacklog(this.game().appId);
+  }
+
+  toggleCompleted(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.steamState.toggleCompleted(this.game().appId);
   }
 }

@@ -40,7 +40,12 @@
         <div class="row g-3">
           @for (stat of stats(); track stat.title) {
             <div class="col-6 col-lg-3">
-              <app-stat-card [icon]="stat.icon" [title]="stat.title" [value]="stat.value">
+              <app-stat-card
+                [icon]="stat.icon"
+                [title]="stat.title"
+                [value]="stat.value"
+                [tooltipItems]="stat.title === 'Hours Played' ? topPlayedGames() : null"
+              >
               </app-stat-card>
             </div>
           }

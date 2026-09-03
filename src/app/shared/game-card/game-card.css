@@ -233,3 +233,42 @@
     transform: rotate(360deg);
   }
 }
+
+.card-actions {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+
+  display: flex;
+  gap: 0.4rem;
+}
+
+.action-icon-btn {
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background-color: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.action-icon-btn:hover {
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+.action-icon-btn.active {
+  background-color: var(--accent);
+  color: #0b1120;
+}
