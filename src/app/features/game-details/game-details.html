@@ -4,7 +4,7 @@
     <p>Loading game details...</p>
   </div>
 } @else if (game(); as selectedGame) {
-  <div class="game-details-page">
+  <div class="game-details-page container py-4">
     <div class="hero">
       <img
         class="hero-image"
@@ -93,7 +93,14 @@
               />
               <div class="achievement-info">
                 <strong>{{ achievement.displayName }}</strong>
-                <span>{{ achievement.achieved ? 'Unlocked' : 'Locked' }}</span>
+                <span>
+                  @if (achievement.globalPercent !== null) {
+                    {{ achievement.globalPercent }}% of players •
+                    {{ achievement.achieved ? 'Unlocked' : 'Locked' }}
+                  } @else {
+                    {{ achievement.achieved ? 'Unlocked' : 'Locked' }}
+                  }
+                </span>
               </div>
               <i
                 class="bi"
