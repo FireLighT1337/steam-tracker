@@ -36,11 +36,15 @@ export class SteamStateService {
 
   readonly loadingAchievementIds = signal<Set<number>>(new Set());
 
-  private readonly STATUS_KEY = 'game-status';
+  private readonly STATUS_KEY_PREFIX = 'game-status';
+
+  private get statusStorageKey(): string {
+    return `${this.STATUS_KEY_PREFIX}:${this._steamId()}`;
+  }
 
   private loadPersistedStatus(): Record<number, { isBacklog: boolean; isCompleted: boolean }> {
     try {
-      const raw = localStorage.getItem(this.STATUS_KEY);
+      const raw = localStorage.getItem(this.statusStorageKey);
       return raw ? JSON.parse(raw) : {};
     } catch {
       return {};
@@ -50,7 +54,7 @@ export class SteamStateService {
   private savePersistedStatus(
     status: Record<number, { isBacklog: boolean; isCompleted: boolean }>,
   ): void {
-    localStorage.setItem(this.STATUS_KEY, JSON.stringify(status));
+    localStorage.setItem(this.statusStorageKey, JSON.stringify(status));
   }
 
   initialize(): void {

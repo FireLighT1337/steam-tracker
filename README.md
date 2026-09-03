@@ -1,59 +1,116 @@
-# SteamTracker
+# Steam Tracker
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.19.
+A full-stack web app for browsing your Steam library, tracking achievements, and managing a personal backlog/completed list — built as a portfolio project.
 
-## Development server
+Live demo: `https://steam-tracker-three.vercel.app/`
 
-To start a local development server, run:
+## Features
+
+- **Dashboard** — profile overview, key stats (owned games, completed, backlog, hours played), recently played games, and quick previews of your backlog/completed lists
+- **Library** — full searchable, sortable, paginated view of your owned games, with per-page lazy-loaded achievement data
+- **Backlog / Completed** — dedicated filtered views of the library, backed by the same component with URL-synced filters and pagination
+- **Game details** — playtime stats, achievement progress, and a full list of achievements (locked/unlocked) with pagination
+- **Steam login** — sign in with your own Steam account via OpenID; falls back to a demo profile when logged out
+- **Persistent backlog/completed status** — stored per-account in the browser (`localStorage`)
+- **Responsive, dark-themed UI** built with Angular signals and Bootstrap
+
+## Tech Stack
+
+### Frontend
+
+- **Angular** (standalone components, signals, the `@angular/build:application` builder)
+- **Bootstrap 5** + **Bootstrap Icons** for layout and iconography
+- RxJS interop (`toSignal`) for bridging router/HTTP observables into signals
+
+### Backend
+
+- **Node.js** + **Express**
+- **Axios** for calls to the Steam Web API and Steam Store API
+- **node-steam-openid** for "Sign in through Steam" (OpenID 2.0)
+- **JWT** (in an HTTP-only cookie) for session persistence after login
+- **cookie-parser**, **cors**
+
+### Deployment
+
+- Hosted as a single **Vercel** project using Vercel's **Services** feature — the Angular build (static) and the Express app (as a service with its own entrypoint) are deployed together under one domain, with `vercel.json` rewrites routing `/api/*` and `/auth/*` to the backend and everything else to the frontend. This avoids any cross-origin cookie issues since both are served from the same origin in production.
+
+## Project Structure
+
+```
+steam-tracker/
+├── backend/
+│   ├── app.js              # Express app (exported, no listen()) — used by Vercel Services
+│   ├── server.js           # Local dev entrypoint (calls app.listen())
+│   ├── config/
+│   │   └── steam-auth.js   # node-steam-openid configuration
+│   ├── routes/
+│   │   ├── steam.js        # /api/steam/* — profile, games, achievements, store data
+│   │   └── auth-router.js  # /auth/* — Steam login, callback, session check, logout
+│   └── services/
+│       └── steam-service.js # Steam Web API / Store API integration
+├── src/
+│   ├── app/
+│   │   ├── core/services/  # SteamService (HTTP), SteamStateService (app state)
+│   │   ├── features/       # dashboard, library, game-details (routed pages)
+│   │   ├── shared/         # navbar, footer, game-card, stat-card
+│   │   └── models/         # TypeScript interfaces for API data
+│   └── environments/       # environment.ts (prod), environment.development.ts
+└── vercel.json              # Multi-service deployment config
+```
+
+## Steam API Integration
+
+The backend wraps the Steam Web API and Steam Store API so the frontend never talks to Steam directly:
+
+| Endpoint                                      | Purpose                                                                         |
+| --------------------------------------------- | ------------------------------------------------------------------------------- |
+| `GET /api/steam/profile/:steamId`             | Player summary + Steam level                                                    |
+| `GET /api/steam/games/:steamId`               | Full owned games list                                                           |
+| `GET /api/steam/recently-played/:steamId`     | Last 2 weeks' activity (capped at 3 games)                                      |
+| `GET /api/steam/achievements/:steamId/:appId` | Per-game achievement progress, rarest achievements, and full achievement list   |
+| `GET /api/steam/store/:appId`                 | Store metadata (name, header image, description) — cached in-memory per `appId` |
+| `GET /auth/steam`                             | Starts the Steam OpenID login redirect                                          |
+| `GET /auth/steam/return`                      | OpenID callback — verifies the login and issues a JWT cookie                    |
+| `GET /auth/me`                                | Returns the currently logged-in `steamId`, if any                               |
+| `POST /auth/logout`                           | Clears the auth cookie                                                          |
+
+Achievement data for the full library is loaded lazily — only for games visible on the current page — to avoid excessive calls to Steam's per-game achievement endpoint (there's no bulk endpoint for a user's whole library).
+
+## Local Development
+
+### Backend
 
 ```bash
+cd backend
+npm install
+```
+
+Create a `.env` file in `backend/`:
+
+```
+STEAM_API_KEY=your_steam_web_api_key
+JWT_SECRET=a_long_random_string
+FRONTEND_URL=http://localhost:4200
+BACKEND_URL=http://localhost:3000
+```
+
+```bash
+npm run dev
+```
+
+Runs on `http://localhost:3000`.
+
+### Frontend
+
+```bash
+npm install
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Runs on `http://localhost:4200`, using `environment.development.ts` to point at the local backend.
 
-## Code scaffolding
+## Notes
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- **Family Sharing games**: Steam's `GetOwnedGames` endpoint only returns games you have a license for — games played via Family Sharing can appear in "recently played" but not in the owned-games list. The app merges both lists where needed so these games still display correctly.
+- **Fallback images**: game card/hero images try several Steam CDN paths in sequence (custom capsule → header → generic capsule) before falling back to a styled placeholder, since not every game has every image asset.
+- **Steam branding**: the "Sign in through Steam" button uses Steam's official button asset per their branding guidelines; the footer includes the required Valve trademark attribution.
