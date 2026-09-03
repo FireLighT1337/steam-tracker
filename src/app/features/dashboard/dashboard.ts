@@ -4,6 +4,7 @@ import { GameCard } from '../../shared/game-card/game-card';
 import { DecimalPipe } from '@angular/common';
 import { SteamStateService } from '../../core/services/steam-state.service';
 import { Game } from '../../models/game.model';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 interface Stat {
   icon: string;
@@ -13,7 +14,7 @@ interface Stat {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [StatCard, GameCard, DecimalPipe],
+  imports: [StatCard, GameCard, DecimalPipe, RouterLink, RouterLinkActive],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -24,6 +25,7 @@ export class Dashboard {
     this.steamState.loadInitialData();
   }
 
+  isLoggedIn = this.steamState.isLoggedInSignal;
   loading = this.steamState.loading;
 
   profile = this.steamState.profile;

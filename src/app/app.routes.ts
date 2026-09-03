@@ -14,19 +14,19 @@ export const routes: Routes = [
     path: 'game/:appId',
     loadComponent: () => import('./features/game-details/game-details').then((m) => m.GameDetails),
   },
-  //   {
-  //     path: 'library',
-  //     loadComponent: () =>
-  //       import('./features/library/library').then((m) => m.LibraryComponent),
-  //   },
-  //   {
-  //     path: 'backlog',
-  //     loadComponent: () =>
-  //       import('./features/backlog/backlog').then((m) => m.BacklogComponent),
-  //   },
-  //   {
-  //     path: 'profile',
-  //     loadComponent: () =>
-  //       import('./features/profile/profile').then((m) => m.ProfileComponent),
-  //   },
+  {
+    path: 'library',
+    loadComponent: () => import('./features/library/library').then((m) => m.Library),
+    data: { statusFilter: 'all' },
+  },
+  {
+    path: 'backlog',
+    loadComponent: () => import('./features/library/library').then((m) => m.Library),
+    data: { statusFilter: 'backlog' },
+  },
+  {
+    path: 'completed',
+    loadComponent: () => import('./features/library/library').then((m) => m.Library),
+    data: { statusFilter: 'completed' },
+  },
 ];

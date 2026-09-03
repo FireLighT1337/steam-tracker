@@ -1,10 +1,16 @@
 <a class="game-card" [routerLink]="['/game', game().appId]">
   <div class="game-image">
-    <img [src]="game().headerImage" [alt]="game().name" (error)="onImageError($event)" />
+    @if (!imageFailed()) {
+      <img [src]="currentImageSrc()" [alt]="game().name" (error)="onImageError()" />
+    } @else {
+      <div class="image-placeholder">
+        <i class="bi bi-controller"></i>
+      </div>
+    }
 
     <span class="playtime">
       <i class="bi bi-clock"></i>
-      @if ((game().playtimeTwoWeeks ?? 0) > 0) {
+      @if (!showTotalPlaytimeOnly() && (game().playtimeTwoWeeks ?? 0) > 0) {
         {{ (game().playtimeTwoWeeks ?? 0) / 60 | number: '1.0-1' }}h in the last 2 weeks
       } @else {
         {{ game().playtimeMinutes / 60 | number: '1.0-0' }} h
@@ -15,42 +21,49 @@
   <div class="game-content">
     <h3>{{ game().name }}</h3>
 
-    <div class="achievement">
-      <div class="achievement-header">
-        <span>Achievements</span>
-        <strong> {{ game().achievementSummary?.progressPercent ?? 0 }}% </strong>
-      </div>
-
-      <div class="progress">
-        <div
-          class="progress-bar"
-          [style.width.%]="game().achievementSummary?.progressPercent ?? 0"
-        ></div>
-      </div>
-    </div>
-    @if (game().achievementSummary?.rarestAchievements?.length) {
-      <div class="rarest-achievements-section">
-        <h4>Rarest Achievements</h4>
-        <div class="rarest-achievements">
-          @for (
-            achievement of game().achievementSummary!.rarestAchievements;
-            track achievement.apiName
-          ) {
-            <div class="rare-achievement">
-              <div class="rare-achievement-icon">
-                <img [src]="achievement.icon" [alt]="achievement.displayName" />
-              </div>
-
-              <span>{{ achievement.displayName }}</span>
-            </div>
-          }
-        </div>
+    @if (achievementsLoading()) {
+      <div class="achievements-loading">
+        <div class="spinner-small"></div>
+        <span>Loading achievements...</span>
       </div>
     } @else {
-      <div class="no-achievements">
-        <i class="bi bi-trophy"></i>
-        <span>No achievements available</span>
+      <div class="achievement">
+        <div class="achievement-header">
+          <span>Achievements</span>
+          <strong> {{ game().achievementSummary?.progressPercent ?? 0 }}% </strong>
+        </div>
+
+        <div class="progress">
+          <div
+            class="progress-bar"
+            [style.width.%]="game().achievementSummary?.progressPercent ?? 0"
+          ></div>
+        </div>
       </div>
+      @if (game().achievementSummary?.rarestAchievements?.length) {
+        <div class="rarest-achievements-section">
+          <h4>Rarest Achievements</h4>
+          <div class="rarest-achievements">
+            @for (
+              achievement of game().achievementSummary!.rarestAchievements;
+              track achievement.apiName
+            ) {
+              <div class="rare-achievement">
+                <div class="rare-achievement-icon">
+                  <img [src]="achievement.icon" [alt]="achievement.displayName" />
+                </div>
+
+                <span>{{ achievement.displayName }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      } @else {
+        <div class="no-achievements">
+          <i class="bi bi-trophy"></i>
+          <span>No achievements available</span>
+        </div>
+      }
     }
   </div>
 </a>

@@ -67,3 +67,33 @@
 .navbar-back-link:hover {
   color: var(--accent-hover);
 }
+
+.auth-btn {
+  position: absolute;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+
+  color: var(--accent);
+  font-size: 0.9rem;
+}
+
+.auth-btn:hover {
+  color: var(--accent-hover);
+}
+
+.steam-login-btn {
+  padding: 0;
+  line-height: 0;
+}
+
+.steam-login-btn img {
+  display: block;
+  height: 38px;
+  width: auto;
+}

@@ -3,6 +3,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
+import { SteamStateService } from '../../core/services/steam-state.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-navbar',
@@ -13,6 +15,9 @@ import { filter, map, startWith } from 'rxjs';
 export class Navbar {
   private readonly router = inject(Router);
   private readonly location = inject(Location);
+  private readonly steamState = inject(SteamStateService);
+
+  isLoggedIn = this.steamState.isLoggedInSignal;
 
   isGameDetailsPage = toSignal(
     this.router.events.pipe(
@@ -25,5 +30,13 @@ export class Navbar {
 
   goBack(): void {
     this.location.back();
+  }
+
+  login(): void {
+    window.location.href = `${environment.authBaseUrl}/auth/steam`;
+  }
+
+  logout(): void {
+    this.steamState.logout();
   }
 }

@@ -10,11 +10,17 @@ import { catchError, forkJoin, map, Observable, of, switchMap } from 'rxjs';
 export class SteamStateService {
   private readonly steamService = inject(SteamService);
 
-  // Replace later when we support searching different users
-  private readonly _steamId = signal('76561198127309108');
-  // private readonly steamId = signal('76561198201368665');
+  private readonly FALLBACK_STEAM_ID = '76561198127309108';
+  private readonly _steamId = signal(this.FALLBACK_STEAM_ID);
+  private readonly _isLoggedIn = signal(false);
+  readonly isLoggedInSignal = this._isLoggedIn.asReadonly();
+
   get steamId(): string {
     return this._steamId();
+  }
+
+  get isLoggedIn(): boolean {
+    return this._isLoggedIn();
   }
 
   readonly profile = signal<UserProfile | null>(null);
@@ -27,6 +33,8 @@ export class SteamStateService {
   readonly totalHours = computed(
     () => this.games().reduce((sum, game) => sum + game.playtimeMinutes, 0) / 60,
   );
+
+  readonly loadingAchievementIds = signal<Set<number>>(new Set());
 
   private readonly STATUS_KEY = 'game-status';
 
@@ -43,6 +51,32 @@ export class SteamStateService {
     status: Record<number, { isBacklog: boolean; isCompleted: boolean }>,
   ): void {
     localStorage.setItem(this.STATUS_KEY, JSON.stringify(status));
+  }
+
+  initialize(): void {
+    this.steamService.getCurrentUser().subscribe({
+      next: ({ steamId }) => {
+        this._steamId.set(steamId ?? this.FALLBACK_STEAM_ID);
+        this._isLoggedIn.set(!!steamId);
+        this.loadInitialData();
+      },
+      error: () => {
+        this._steamId.set(this.FALLBACK_STEAM_ID);
+        this._isLoggedIn.set(false);
+        this.loadInitialData();
+      },
+    });
+  }
+
+  logout(): void {
+    this.steamService.logout().subscribe(() => {
+      this._steamId.set(this.FALLBACK_STEAM_ID);
+      this._isLoggedIn.set(false);
+      this.games.set([]);
+      this.recentlyPlayed.set([]);
+      this.profile.set(null);
+      this.loadInitialData();
+    });
   }
 
   loadInitialData(): void {
@@ -147,5 +181,59 @@ export class SteamStateService {
         );
       }),
     );
+  }
+
+  loadAchievementsForGames(appIds: number[]): void {
+    const idsToLoad: number[] = [];
+
+    appIds.forEach((appId) => {
+      const inGames = this.games().find((g) => g.appId === appId);
+      if (inGames?.achievementSummary) return; // already loaded
+
+      const inRecent = this.recentlyPlayed().find((g) => g.appId === appId);
+      if (inRecent?.achievementSummary) {
+        // reuse data already fetched for the recently-played list — no new API call
+        const hasMatch = this.games().some((g) => g.appId === appId);
+        if (hasMatch) {
+          this.games.update((games) =>
+            games.map((g) =>
+              g.appId === appId ? { ...g, achievementSummary: inRecent.achievementSummary } : g,
+            ),
+          );
+        }
+        return;
+      }
+
+      if (!this.loadingAchievementIds().has(appId)) {
+        idsToLoad.push(appId);
+      }
+    });
+
+    if (idsToLoad.length === 0) return;
+
+    this.loadingAchievementIds.update((set) => new Set([...set, ...idsToLoad]));
+
+    idsToLoad.forEach((appId) => {
+      this.steamService.getAchievements(this._steamId(), appId).subscribe({
+        next: (achievementSummary) => {
+          this.games.update((games) =>
+            games.map((g) => (g.appId === appId ? { ...g, achievementSummary } : g)),
+          );
+          this.loadingAchievementIds.update((set) => {
+            const next = new Set(set);
+            next.delete(appId);
+            return next;
+          });
+        },
+        error: (error) => {
+          console.error(`Failed to load achievements for appId ${appId}:`, error);
+          this.loadingAchievementIds.update((set) => {
+            const next = new Set(set);
+            next.delete(appId);
+            return next;
+          });
+        },
+      });
+    });
   }
 }

@@ -11,9 +11,18 @@
         <div class="welcome-content">
           <p class="eyebrow">YOUR PROFILE OVERVIEW</p>
 
-          <h1>Hey there, {{ profile()?.username }}</h1>
+          @if (isLoggedIn()) {
+            <h1>Hey there, {{ profile()?.username }}</h1>
+          } @else {
+            <h1>Greetings, this is a placeholder profile</h1>
+            <p class="placeholder-note">
+              Want to see your own stats? Use the login button above to sign in with Steam.
+            </p>
+          }
 
-          <p class="subtitle">Here's an overview of your Steam Account.</p>
+          @if (isLoggedIn()) {
+            <p class="subtitle">Here's an overview of your Steam Account.</p>
+          }
         </div>
 
         <div class="profile-badge">
@@ -46,7 +55,7 @@
             <h2>Recently Played</h2>
           </div>
 
-          <a class="section-link">
+          <a class="section-link" routerLink="/library" routerLinkActive="active">
             View library
             <i class="bi bi-arrow-right"></i>
           </a>
@@ -87,7 +96,7 @@
 
               <div class="overview-list">
                 @for (game of backlogPreview(); track game.appId) {
-                  <div class="overview-game">
+                  <a [routerLink]="['/game', game.appId]" class="overview-game">
                     <img
                       [src]="game.headerImage"
                       [alt]="game.name"
@@ -101,7 +110,7 @@
                     </div>
 
                     <i class="bi bi-chevron-right"></i>
-                  </div>
+                  </a>
                 } @empty {
                   <div class="empty-state">
                     <i class="bi bi-check-circle"></i>
@@ -112,7 +121,7 @@
               </div>
 
               @if (backlogGames() > 3) {
-                <button class="overview-link">
+                <button routerLink="/backlog" class="overview-link">
                   View all {{ backlogGames() }} games
                   <i class="bi bi-arrow-right"></i>
                 </button>
@@ -136,7 +145,7 @@
 
               <div class="overview-list">
                 @for (game of recentlyCompletedGames(); track game.appId) {
-                  <div class="overview-game">
+                  <a [routerLink]="['/game', game.appId]" class="overview-game">
                     <img
                       [src]="game.headerImage"
                       [alt]="game.name"
@@ -146,13 +155,11 @@
                     <div class="overview-game-info">
                       <strong>{{ game.name }}</strong>
 
-                      <span>
-                        {{ game.achievementSummary?.progressPercent ?? 0 }}% achievements
-                      </span>
+                      <span>{{ game.playtimeMinutes / 60 | number: '1.0-0' }} hours played</span>
                     </div>
 
                     <i class="bi bi-check-circle completed-icon"></i>
-                  </div>
+                  </a>
                 } @empty {
                   <div class="empty-state">
                     <i class="bi bi-controller"></i>
@@ -161,6 +168,12 @@
                   </div>
                 }
               </div>
+              @if (completedGames() > 3) {
+                <button routerLink="/completed" class="overview-link">
+                  View all {{ completedGames() }} games
+                  <i class="bi bi-arrow-right"></i>
+                </button>
+              }
             </div>
           </div>
         </div>

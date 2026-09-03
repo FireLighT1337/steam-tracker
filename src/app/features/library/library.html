@@ -1,0 +1,93 @@
+<div class="container py-4 library-page">
+  <div class="library-header">
+    <p class="eyebrow">YOUR LIBRARY</p>
+    <h1>{{ pageTitle() }}</h1>
+  </div>
+
+  <div class="status-tabs">
+    <button
+      class="status-tab"
+      [class.active]="statusFilter() === 'all'"
+      (click)="setStatusFilter('all')"
+    >
+      All Games
+    </button>
+    <button
+      class="status-tab"
+      [class.active]="statusFilter() === 'backlog'"
+      (click)="setStatusFilter('backlog')"
+    >
+      Backlog
+    </button>
+    <button
+      class="status-tab"
+      [class.active]="statusFilter() === 'completed'"
+      (click)="setStatusFilter('completed')"
+    >
+      Completed
+    </button>
+  </div>
+
+  <div class="library-controls">
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Search games..."
+      [value]="searchTerm()"
+      (input)="onSearchChange($any($event.target).value)"
+    />
+
+    <select
+      class="sort-select"
+      [value]="sortOption()"
+      (change)="onSortChange($any($event.target).value)"
+    >
+      <option value="name-asc">Name (A-Z)</option>
+      <option value="name-desc">Name (Z-A)</option>
+      <option value="playtime-desc">Playtime (High to Low)</option>
+      <option value="playtime-asc">Playtime (Low to High)</option>
+    </select>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading your library...</p>
+    </div>
+  } @else {
+    <div class="row g-4">
+      @for (game of pagedGames(); track game.appId) {
+        <div class="col-12 col-md-6 col-xl-4">
+          <app-game-card
+            [game]="game"
+            [achievementsLoading]="loadingAchievementIds().has(game.appId)"
+            [showTotalPlaytimeOnly]="true"
+          />
+        </div>
+      } @empty {
+        <div class="empty-state">
+          <i class="bi bi-search"></i>
+          <p>No games match your search.</p>
+        </div>
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <button class="page-btn" (click)="prevPage()" [disabled]="currentPage() === 1">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+
+        @for (page of pageNumbers(); track page) {
+          <button class="page-btn" [class.active]="page === currentPage()" (click)="goToPage(page)">
+            {{ page }}
+          </button>
+        }
+
+        <button class="page-btn" (click)="nextPage()" [disabled]="currentPage() === totalPages()">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    }
+  }
+</div>
