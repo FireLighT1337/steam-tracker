@@ -4,4 +4,5 @@ export interface AchievementSummary {
   progressPercent: number;
   rarestAchievements: Achievement[];
   achievements: Achievement[];
+  private?: boolean;
 }

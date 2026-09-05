@@ -61,64 +61,76 @@
       </div>
     </div>
 
-    @if (selectedGame.achievementSummary?.rarestAchievements?.length) {
+    @if (selectedGame.achievementSummary?.private) {
       <div class="section">
-        <h2>Rarest Achievements</h2>
-        <div class="achievement-list">
-          @for (
-            achievement of selectedGame.achievementSummary!.rarestAchievements;
-            track achievement.apiName
-          ) {
-            <div class="achievement-row">
-              <img [src]="achievement.icon" [alt]="achievement.displayName" />
-              <div class="achievement-info">
-                <strong>{{ achievement.displayName }}</strong>
-                <span>{{ achievement.globalPercent }}% of players • Unlocked</span>
-              </div>
-            </div>
-          }
+        <div class="private-achievements-notice">
+          <i class="bi bi-lock"></i>
+          <p>
+            This player's achievements are private. Achievement details require the "Game details"
+            privacy setting to be set to Public on Steam.
+          </p>
         </div>
       </div>
-    }
-
-    @if (selectedGame.achievementSummary?.achievements?.length) {
-      <div class="section">
-        <h2>All Achievements</h2>
-        <div class="achievement-list">
-          @for (achievement of visibleAchievements(); track achievement.apiName) {
-            <div class="achievement-row">
-              <img
-                [src]="achievement.achieved ? achievement.icon : achievement.iconGray"
-                [alt]="achievement.displayName"
-              />
-              <div class="achievement-info">
-                <strong>{{ achievement.displayName }}</strong>
-                <span>
-                  @if (achievement.globalPercent !== null) {
-                    {{ achievement.globalPercent }}% of players •
-                    {{ achievement.achieved ? 'Unlocked' : 'Locked' }}
-                  } @else {
-                    {{ achievement.achieved ? 'Unlocked' : 'Locked' }}
-                  }
-                </span>
+    } @else {
+      @if (selectedGame.achievementSummary?.rarestAchievements?.length) {
+        <div class="section">
+          <h2>Rarest Achievements</h2>
+          <div class="achievement-list">
+            @for (
+              achievement of selectedGame.achievementSummary!.rarestAchievements;
+              track achievement.apiName
+            ) {
+              <div class="achievement-row">
+                <img [src]="achievement.icon" [alt]="achievement.displayName" />
+                <div class="achievement-info">
+                  <strong>{{ achievement.displayName }}</strong>
+                  <span>{{ achievement.globalPercent }}% of players • Unlocked</span>
+                </div>
               </div>
-              <i
-                class="bi"
-                [class.bi-check-circle-fill]="achievement.achieved"
-                [class.bi-lock-fill]="!achievement.achieved"
-                [class.achieved]="achievement.achieved"
-              ></i>
-            </div>
+            }
+          </div>
+        </div>
+      }
+
+      @if (selectedGame.achievementSummary?.achievements?.length) {
+        <div class="section">
+          <h2>All Achievements</h2>
+          <div class="achievement-list">
+            @for (achievement of visibleAchievements(); track achievement.apiName) {
+              <div class="achievement-row">
+                <img
+                  [src]="achievement.achieved ? achievement.icon : achievement.iconGray"
+                  [alt]="achievement.displayName"
+                />
+                <div class="achievement-info">
+                  <strong>{{ achievement.displayName }}</strong>
+                  <span>
+                    @if (achievement.globalPercent !== null) {
+                      {{ achievement.globalPercent }}% of players •
+                      {{ achievement.achieved ? 'Unlocked' : 'Locked' }}
+                    } @else {
+                      {{ achievement.achieved ? 'Unlocked' : 'Locked' }}
+                    }
+                  </span>
+                </div>
+                <i
+                  class="bi"
+                  [class.bi-check-circle-fill]="achievement.achieved"
+                  [class.bi-lock-fill]="!achievement.achieved"
+                  [class.achieved]="achievement.achieved"
+                ></i>
+              </div>
+            }
+          </div>
+
+          @if (hasMoreAchievements()) {
+            <button class="show-more-btn" (click)="showMoreAchievements()">
+              Show More
+              <i class="bi bi-chevron-down"></i>
+            </button>
           }
         </div>
-
-        @if (hasMoreAchievements()) {
-          <button class="show-more-btn" (click)="showMoreAchievements()">
-            Show More
-            <i class="bi bi-chevron-down"></i>
-          </button>
-        }
-      </div>
+      }
     }
 
     <div class="actions">

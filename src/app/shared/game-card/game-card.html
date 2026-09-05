@@ -90,8 +90,18 @@
         </div>
       } @else {
         <div class="no-achievements">
-          <i class="bi bi-trophy"></i>
-          <span>No achievements available</span>
+          <i
+            class="bi"
+            [class.bi-trophy]="!game().achievementSummary?.private"
+            [class.bi-lock]="game().achievementSummary?.private"
+          ></i>
+          <span>
+            @if (game().achievementSummary?.private) {
+              Achievements are private on this profile
+            } @else {
+              No achievements available
+            }
+          </span>
         </div>
       }
     }

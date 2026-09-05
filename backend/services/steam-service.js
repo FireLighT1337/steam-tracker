@@ -120,6 +120,15 @@ async function getAchievements(steamId, appId) {
     getGlobalAchievementPercentages(appId),
   ]);
 
+  if (playerData.playerstats?.success === false) {
+    return {
+      progressPercent: 0,
+      rarestAchievements: [],
+      achievements: [],
+      private: true,
+    };
+  }
+
   const playerAchievements = playerData.playerstats?.achievements ?? [];
 
   const schemaAchievements = schemaData.game?.availableGameStats?.achievements ?? [];

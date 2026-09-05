@@ -236,3 +236,24 @@
     transform: rotate(360deg);
   }
 }
+
+.private-achievements-notice {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  padding: 1.5rem;
+
+  color: var(--text-secondary);
+}
+
+.private-achievements-notice i {
+  font-size: 1.5rem;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.private-achievements-notice p {
+  margin: 0;
+  font-size: 0.9rem;
+}
