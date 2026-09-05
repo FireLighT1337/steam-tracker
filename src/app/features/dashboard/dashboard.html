@@ -7,46 +7,61 @@
   <div class="dashboard">
     <div class="container py-4">
       <!-- Welcome -->
-      <section class="welcome-section mb-4">
+      <section class="welcome-section">
         <div class="welcome-content">
-          <p class="eyebrow">YOUR PROFILE OVERVIEW</p>
+          <p class="eyebrow">YOUR LIBRARY MANAGER</p>
 
           @if (isLoggedIn()) {
-            <h1>Hey there, {{ profile()?.username }}</h1>
+            <h1>{{ profile()?.username }}</h1>
           } @else {
             <h1>Greetings, this is a placeholder profile</h1>
             <p class="placeholder-note">
               Want to see your own stats? Use the login button above to sign in with Steam.
             </p>
           }
-
-          @if (isLoggedIn()) {
-            <p class="subtitle">Here's an overview of your Steam Account.</p>
-          }
         </div>
 
-        <div class="profile-badge">
+        <a [href]="profile()?.profileUrl" target="_blank" rel="noreferrer" class="profile-badge">
           <img [src]="profile()?.avatar" [alt]="profile()?.username" />
 
           <div>
             <span>Steam Level</span>
             <strong>{{ profile()?.steamLevel }}</strong>
           </div>
-        </div>
+        </a>
       </section>
 
       <!-- Stats -->
       <section class="mb-5">
         <div class="row g-3">
           @for (stat of stats(); track stat.title) {
-            <div class="col-6 col-lg-3">
-              <app-stat-card
-                [icon]="stat.icon"
-                [title]="stat.title"
-                [value]="stat.value"
-                [tooltipItems]="stat.title === 'Hours Played' ? topPlayedGames() : null"
-              >
-              </app-stat-card>
+            <div class="col-6 col-lg">
+              @if (stat.title === 'Hours Played') {
+                <a
+                  routerLink="/library"
+                  [queryParams]="{ sort: 'playtime-desc' }"
+                  class="stat-link"
+                >
+                  <app-stat-card
+                    [icon]="stat.icon"
+                    [title]="stat.title"
+                    [value]="stat.value"
+                    [tooltipItems]="topPlayedGames()"
+                  />
+                </a>
+              } @else if (stat.title === 'Backlog') {
+                <a routerLink="/backlog" class="stat-link">
+                  <app-stat-card [icon]="stat.icon" [title]="stat.title" [value]="stat.value" />
+                </a>
+              } @else if (stat.title === 'Marked Complete') {
+                <a routerLink="/completed" class="stat-link">
+                  <app-stat-card [icon]="stat.icon" [title]="stat.title" [value]="stat.value" />
+                </a>
+              } @else {
+                <a routerLink="/library" class="stat-link">
+                  <app-stat-card [icon]="stat.icon" [title]="stat.title" [value]="stat.value" />
+                </a>
+              }
             </div>
           }
         </div>
@@ -77,26 +92,20 @@
 
       <!-- Gaming Overview -->
       <section class="gaming-overview">
-        <div class="section-header">
-          <div>
-            <p class="eyebrow">YOUR LIBRARY</p>
-            <h2>Game Overview</h2>
-          </div>
-        </div>
-
         <div class="row g-4">
           <!-- Backlog -->
           <div class="col-12 col-lg-6">
             <div class="overview-card">
               <div class="overview-card-header">
-                <div>
+                <div class="overview-header-left">
                   <h3>Backlog</h3>
-                  <p>Games waiting to be played</p>
+                  <span class="overview-count">{{ backlogGames() }}</span>
                 </div>
 
-                <span class="overview-count">
-                  {{ backlogGames() }}
-                </span>
+                <a routerLink="/backlog" class="overview-link">
+                  View Backlog
+                  <i class="bi bi-arrow-right"></i>
+                </a>
               </div>
 
               <div class="overview-list">
@@ -110,8 +119,7 @@
 
                     <div class="overview-game-info">
                       <strong>{{ game.name }}</strong>
-
-                      <span> {{ game.playtimeMinutes / 60 | number: '1.0-0' }} hours played </span>
+                      <span>{{ game.playtimeMinutes / 60 | number: '1.0-0' }} hours played</span>
                     </div>
 
                     <i class="bi bi-chevron-right"></i>
@@ -119,18 +127,10 @@
                 } @empty {
                   <div class="empty-state">
                     <i class="bi bi-check-circle"></i>
-
                     <p>Your backlog is empty.</p>
                   </div>
                 }
               </div>
-
-              @if (backlogGames() > 3) {
-                <button routerLink="/backlog" class="overview-link">
-                  View all {{ backlogGames() }} games
-                  <i class="bi bi-arrow-right"></i>
-                </button>
-              }
             </div>
           </div>
 
@@ -138,14 +138,15 @@
           <div class="col-12 col-lg-6">
             <div class="overview-card">
               <div class="overview-card-header">
-                <div>
+                <div class="overview-header-left">
                   <h3>Completed Games</h3>
-                  <p>Games you've marked as complete</p>
+                  <span class="overview-count">{{ completedGames() }}</span>
                 </div>
 
-                <span class="overview-count">
-                  {{ completedGames() }}
-                </span>
+                <a routerLink="/completed" class="overview-link">
+                  View Completed
+                  <i class="bi bi-arrow-right"></i>
+                </a>
               </div>
 
               <div class="overview-list">
@@ -159,7 +160,6 @@
 
                     <div class="overview-game-info">
                       <strong>{{ game.name }}</strong>
-
                       <span>{{ game.playtimeMinutes / 60 | number: '1.0-0' }} hours played</span>
                     </div>
 
@@ -168,17 +168,10 @@
                 } @empty {
                   <div class="empty-state">
                     <i class="bi bi-controller"></i>
-
                     <p>You haven't completed any games yet.</p>
                   </div>
                 }
               </div>
-              @if (completedGames() > 3) {
-                <button routerLink="/completed" class="overview-link">
-                  View all {{ completedGames() }} games
-                  <i class="bi bi-arrow-right"></i>
-                </button>
-              }
             </div>
           </div>
         </div>

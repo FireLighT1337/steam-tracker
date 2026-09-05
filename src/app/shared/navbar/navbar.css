@@ -53,35 +53,45 @@
 .navbar-back-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-
+  gap: 0.35rem;
   background: none;
   border: none;
-  padding: 0;
+  padding: 0.5rem 1rem;
   cursor: pointer;
   font: inherit;
-
-  color: var(--accent);
+  color: var(--text-secondary);
   text-decoration: none;
-  font-size: 0.9rem;
+  transition: color 0.2s ease;
 }
 
 .navbar-back-link:hover {
   color: var(--accent-hover);
 }
 
+.navbar-back-link i {
+  font-size: 0.9rem;
+}
+
 .auth-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
   background: none;
   border: none;
+  padding: 0.5rem 1rem;
   cursor: pointer;
   font: inherit;
-
-  color: var(--accent);
-  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-align: left;
+  transition: color 0.2s ease;
 }
 
 .auth-btn:hover {
   color: var(--accent-hover);
+}
+
+.logout-item {
+  margin-left: 1.5rem;
 }
 
 .steam-login-btn {

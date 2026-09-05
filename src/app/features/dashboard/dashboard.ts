@@ -70,7 +70,12 @@ export class Dashboard {
   stats = computed<Stat[]>(() => [
     {
       icon: 'bi-joystick',
-      title: 'Owned Games',
+      title: 'Total Games',
+      value: this.allTrackedGames().length,
+    },
+    {
+      icon: 'bi-controller',
+      title: 'Own Games',
       value: this.gamesOwned(),
     },
     {

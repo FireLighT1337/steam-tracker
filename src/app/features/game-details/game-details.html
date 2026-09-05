@@ -16,8 +16,37 @@
         [alt]="selectedGame.name"
         (error)="onHeroImageError($event, selectedGame.appId)"
       />
+
+      <div class="hero-badges">
+        @if (selectedGame.isBacklog) {
+          <span class="hero-badge" title="In Backlog">
+            <i class="bi bi-bookmark-fill"></i>
+          </span>
+        }
+
+        @if (selectedGame.isCompleted) {
+          <span class="hero-badge" title="Marked Complete">
+            <i class="bi bi-check-circle-fill"></i>
+          </span>
+        }
+
+        @if (isFullyCompleted()) {
+          <span class="hero-badge hero-badge-gold" title="100% Achievements">
+            <i class="bi bi-trophy-fill"></i>
+          </span>
+        }
+      </div>
+
       <div class="hero-overlay">
         <h1>{{ selectedGame.name }}</h1>
+        <span class="ownership-label">
+          <i
+            class="bi"
+            [class.bi-person-check]="!isFamilyShared()"
+            [class.bi-people]="isFamilyShared()"
+          ></i>
+          {{ isFamilyShared() ? 'Family Shared' : 'From Own Library' }}
+        </span>
       </div>
     </div>
 
@@ -45,6 +74,25 @@
         <strong>{{ selectedGame.achievementSummary?.progressPercent ?? 0 }}%</strong>
         <span>Achievement Progress</span>
       </div>
+    </div>
+
+    <div class="actions">
+      <button class="action-btn back-action-btn" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+        Back
+      </button>
+
+      <button class="action-btn" [class.active]="selectedGame.isBacklog" (click)="toggleBacklog()">
+        {{ selectedGame.isBacklog ? 'Remove from Backlog' : 'Add to Backlog' }}
+      </button>
+
+      <button
+        class="action-btn primary"
+        [class.active]="selectedGame.isCompleted"
+        (click)="toggleCompleted()"
+      >
+        {{ selectedGame.isCompleted ? 'Completed ✓' : 'Mark Completed' }}
+      </button>
     </div>
 
     <div class="achievements-section">
@@ -94,7 +142,19 @@
 
       @if (selectedGame.achievementSummary?.achievements?.length) {
         <div class="section">
-          <h2>All Achievements</h2>
+          <div class="achievements-list-header">
+            <h2>All Achievements</h2>
+
+            <select
+              class="achievement-sort-select"
+              [value]="achievementSortOption()"
+              (change)="onAchievementSortChange($any($event.target).value)"
+            >
+              <option value="default">Default Order</option>
+              <option value="rarest">Rarest First</option>
+              <option value="alphabetical">Alphabetical</option>
+            </select>
+          </div>
           <div class="achievement-list">
             @for (achievement of visibleAchievements(); track achievement.apiName) {
               <div class="achievement-row">
@@ -132,20 +192,6 @@
         </div>
       }
     }
-
-    <div class="actions">
-      <button class="action-btn" [class.active]="selectedGame.isBacklog" (click)="toggleBacklog()">
-        {{ selectedGame.isBacklog ? 'Remove from Backlog' : 'Add to Backlog' }}
-      </button>
-
-      <button
-        class="action-btn primary"
-        [class.active]="selectedGame.isCompleted"
-        (click)="toggleCompleted()"
-      >
-        {{ selectedGame.isCompleted ? 'Completed ✓' : 'Mark Completed' }}
-      </button>
-    </div>
   </div>
 } @else {
   <div class="error-state">

@@ -1,11 +1,14 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { Location } from '@angular/common';
 import { map, switchMap } from 'rxjs';
 import { DecimalPipe } from '@angular/common';
 import { SteamStateService } from '../../core/services/steam-state.service';
 import { SteamService } from '../../core/services/steam.service';
 import { Game } from '../../models/game.model';
+
+type AchievementSortOption = 'default' | 'rarest' | 'alphabetical';
 
 @Component({
   selector: 'app-game-details',
@@ -17,6 +20,7 @@ export class GameDetails {
   private readonly route = inject(ActivatedRoute);
   private readonly steamState = inject(SteamStateService);
   private readonly steamService = inject(SteamService);
+  private readonly location = inject(Location);
 
   loading = this.steamState.loading;
 
@@ -63,6 +67,16 @@ export class GameDetails {
 
   totalCount = computed(() => this.game()?.achievementSummary?.achievements?.length ?? 0);
 
+  isFullyCompleted = computed(
+    () => (this.game()?.achievementSummary?.progressPercent ?? 0) === 100,
+  );
+
+  isFamilyShared = computed(() => {
+    const id = this.appId();
+    const inOwnedGames = this.steamState.games().some((g) => g.appId === id);
+    return !inOwnedGames;
+  });
+
   toggleBacklog(): void {
     this.steamState.toggleBacklog(this.appId());
   }
@@ -72,19 +86,40 @@ export class GameDetails {
   }
 
   visibleAchievementCount = signal(10);
+  achievementSortOption = signal<AchievementSortOption>('default');
+
+  private readonly sortedAchievements = computed(() => {
+    const achievements = this.game()?.achievementSummary?.achievements ?? [];
+
+    switch (this.achievementSortOption()) {
+      case 'rarest':
+        return [...achievements].sort((a, b) => {
+          if (a.globalPercent === null) return 1;
+          if (b.globalPercent === null) return -1;
+          return a.globalPercent - b.globalPercent;
+        });
+      case 'alphabetical':
+        return [...achievements].sort((a, b) => a.displayName.localeCompare(b.displayName));
+      default:
+        return achievements;
+    }
+  });
 
   visibleAchievements = computed(() => {
-    const achievements = this.game()?.achievementSummary?.achievements ?? [];
-    return achievements.slice(0, this.visibleAchievementCount());
+    return this.sortedAchievements().slice(0, this.visibleAchievementCount());
   });
 
   hasMoreAchievements = computed(() => {
-    const total = this.game()?.achievementSummary?.achievements?.length ?? 0;
-    return this.visibleAchievementCount() < total;
+    return this.visibleAchievementCount() < this.sortedAchievements().length;
   });
 
   showMoreAchievements(): void {
     this.visibleAchievementCount.update((count) => count + 10);
+  }
+
+  onAchievementSortChange(value: AchievementSortOption): void {
+    this.achievementSortOption.set(value);
+    this.visibleAchievementCount.set(10);
   }
 
   onHeroImageError(event: Event, appId: number): void {
@@ -94,5 +129,9 @@ export class GameDetails {
     if (img.src !== fallbackUrl) {
       img.src = fallbackUrl;
     }
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 }
