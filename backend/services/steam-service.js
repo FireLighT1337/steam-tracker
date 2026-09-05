@@ -77,7 +77,7 @@ async function getPlayerAchievements(steamId, appId) {
     );
     return response.data;
   } catch (error) {
-    if (error.response?.status === 400 || error.response?.status === 403) {
+    if ([400, 403, 429].includes(error.response?.status)) {
       return { playerstats: { achievements: [] } };
     }
     throw error;

@@ -21,10 +21,6 @@ interface Stat {
 export class Dashboard {
   private readonly steamState = inject(SteamStateService);
 
-  constructor() {
-    this.steamState.loadInitialData();
-  }
-
   isLoggedIn = this.steamState.isLoggedInSignal;
   loading = this.steamState.loading;
 
